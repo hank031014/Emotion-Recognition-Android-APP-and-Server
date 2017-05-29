@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.emotion.emotion.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="368dp"
+        android:layout_height="495dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp"
+        tools:ignore="ExtraText,MissingConstraints">
+
+        <Button
+            android:id="@+id/btnSound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/tvResp"
+            android:layout_marginTop="23dp"
+            android:text="@string/btn_sound" />
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/btnSound"
+            android:layout_alignBottom="@+id/btnSound"
+            android:layout_toEndOf="@+id/ivResp"
+            android:text="@string/btn_clear" />
+
+        <Switch
+            android:id="@+id/swMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/btnSound"
+            android:layout_alignBottom="@+id/btnSound"
+            android:text="@string/SL_mode" />
+
+        <TextView
+            android:id="@+id/tvSound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnSound"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="42dp"
+            android:gravity="center"
+            android:text="@string/start_talk"
+            android:textColor="#000000"
+            android:textSize="20sp" />/>
+
+        <TextView
+            android:id="@+id/tvResp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvSound"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:text="@string/tv_empty"
+            android:textColor="#000000"
+            android:textSize="20sp" />/>
+
+        <ImageView
+            android:id="@+id/ivResp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_below="@+id/tvResp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="75dp"
+            app:srcCompat="@mipmap/ic_launcher"
+            android:contentDescription=""
+            tools:ignore="ContentDescription" />
+
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>
