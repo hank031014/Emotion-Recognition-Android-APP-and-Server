@@ -6,10 +6,10 @@ import jieba
 tree=EHowNetTree("db/ehownet_ontology.sqlite")
 
 def emotion(string):
-	emotion = [tree.semanticType('MentalState|精神狀態.1'),tree.semanticType('MentalAct|精神動作.1'),tree.	semanticType('BeGood|良態.1'),tree.semanticType('BeBad|衰變.1')]
+	emotion = [tree.semanticType('MentalState|精神狀態.1'), tree.semanticType('MentalAct|精神動作.1'), tree.semanticType('BeGood|良態.1'), tree.semanticType('BeBad|衰變.1'), tree.semanticType('end|終結.1')]
 	emotion_state=0
 	negative=0
-    
+
 	seg=jieba.cut(string)
 	seg=list(seg)
 
@@ -21,7 +21,7 @@ def emotion(string):
 			node=tree.word(lst[0].name)
 			categoryList=node.getSemanticTypeList()
 			category=tree.semanticType(categoryList[0].name)
-			if category.isDescendantOf(emotion[0]) or category.isDescendantOf(emotion[1])or category.isDescendantOf(emotion[2])or category.isDescendantOf(emotion[3]) :
+			if category.isDescendantOf(emotion[0]) or category.isDescendantOf(emotion[1])or category.isDescendantOf(emotion[2])or category.isDescendantOf(emotion[3]) or category.isDescendantOf(emotion[4]):
 				if category.isDescendantOf(tree.semanticType('AtEase|安心.1'))==True:
 					emotion_state=1
 				elif category.isDescendantOf(tree.semanticType('joyful|喜悅.1')) or category.isDescendantOf(tree.semanticType('AttitudeByGood|好態.1')):
@@ -42,7 +42,7 @@ def emotion(string):
 					emotion_state = 9
 				elif category.isDescendantOf(tree.semanticType('sorrowful|悲哀.1'))==True:
 					emotion_state = 10
-				elif category.isDescendantOf(tree.semanticType('fear|害怕.1'))==True:
+				elif category.isDescendantOf(tree.semanticType('fear|害怕.1')) or category.isDescendantOf(tree.semanticType('end|終結.1')):
 					emotion_state = 11
 				elif category.isDescendantOf(tree.semanticType('surprise|驚奇.1'))==True:
 					emotion_state = 12
