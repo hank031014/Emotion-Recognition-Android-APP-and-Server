@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,28 +20,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
     private Boolean doubleBackToExitPressedOnce = false;
 
-    private Switch swMode;
     private Button btnSound, btnClear;
     private TextView tvSound, tvResp;
     private ImageView ivResp;
+    private TextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*
-        int permission = ActivityCompat.checkSelfPermission(this, android.Manifest.permission.INTERNET);
-        Log.d("REQ", "data:: " + permission);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            Log.d("REQ", "Need Internet Permission!");
-        }
-        */
-        swMode = (Switch)findViewById(R.id.swMode);
+        createTTS();
+
         btnSound = (Button)findViewById(R.id.btnSound);
         btnClear = (Button)findViewById(R.id.btnClear);
         tvSound = (TextView)findViewById(R.id.tvSound);
@@ -52,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "請說話..."); //語音辨識 Dialog 上要顯示的提示文字
+                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, R.string.please_speak); //語音辨識 Dialog 上要顯示的提示文字
 
                 try {
                     startActivityForResult(intent, 1);
@@ -70,17 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 ivResp.setImageResource(R.mipmap.ic_launcher);
             }
         });
-        swMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    swMode.setText(R.string.SVM_mode);
-                }
-                else{
-                    swMode.setText(R.string.SL_mode);
-                }
-            }
-        });
+
     }
 
     @Override
@@ -92,13 +78,7 @@ public class MainActivity extends AppCompatActivity {
                     ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     String resp = text.get(0);
                     tvSound.setText(resp);  //直接拿text.get(0)來用
-                    if(swMode.isChecked()){
-                        new SVMPost(MainActivity.this).execute(resp);
-                    }
-                    else{
-                        new SLPost(MainActivity.this).execute(resp);
-                    }
-
+                    new SLPost(MainActivity.this, tts).execute(resp);
                 }
                 break;
             }
@@ -118,9 +98,36 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                doubleBackToExitPressedOnce=false;
+                doubleBackToExitPressedOnce = false;
             }
         }, 2000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(tts != null) {
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
+
+    private void createTTS(){
+        if(tts == null){
+            tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if(status == TextToSpeech.SUCCESS) {
+                        int result = tts.setLanguage(Locale.TRADITIONAL_CHINESE);
+                        if(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
+                            Log.e("Error", "This Language is not supported");
+                        }
+                    }
+                    else {
+                        Log.e("Error", "Initialization Failed!");
+                    }
+                }
+            });
+        }
     }
 
 }

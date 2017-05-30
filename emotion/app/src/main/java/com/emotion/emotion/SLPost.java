@@ -3,7 +3,10 @@ package com.emotion.emotion;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -23,17 +26,19 @@ import java.net.URLEncoder;
 public class SLPost extends AsyncTask<String, String, Integer> {
     private static final int TIME_OUT = 1000;
     private static final String TAG_SUCCESS = "success";
-    private static final String url_SL = "http://140.116.154.88/emotion/SL_manage.py";
+    private static final String url_SL = "http://example.com/emotion/SL_manage.py";
     static String json = "";
 
     private JSONObject jsonObj;
     private String[][] data;
     private String resp;
     private Activity activity;
+    private TextToSpeech tts;
     private ProgressDialog pDialog;
 
-    public SLPost(Activity a){
+    public SLPost(Activity a, TextToSpeech tts){
         activity = a;
+        this.tts = tts;
     }
 
     // loading...
@@ -53,12 +58,7 @@ public class SLPost extends AsyncTask<String, String, Integer> {
 
         // Building Parameters
         try{
-            JSONObject postJson = new JSONObject();
-            postJson.put("value", 1523);
-            postJson.put("str", postStr);
-            int value = 5123;
-            String up = "value=" + value + "&str=" + URLEncoder.encode(postStr, "UTF-8");
-
+            String up = "str=" + URLEncoder.encode(postStr, "UTF-8");
             URL url = new URL(url_SL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -70,7 +70,6 @@ public class SLPost extends AsyncTask<String, String, Integer> {
 
             DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
             wr.writeBytes(up);
-            Log.d("JSON_WR", up);
             wr.flush();
             wr.close();
 
@@ -82,7 +81,7 @@ public class SLPost extends AsyncTask<String, String, Integer> {
                 sb.append(line + "\n");
             }
             json = sb.toString();
-            Log.d("JSON", "J: " + json);
+            //Log.d("JSON", "J: " + json);
             reader.close();
 
             if (Thread.interrupted()) {
@@ -120,21 +119,85 @@ public class SLPost extends AsyncTask<String, String, Integer> {
                 Toast.makeText(activity.getApplicationContext(), "操作失敗，請聯絡管理員", Toast.LENGTH_LONG).show();
                 break;
             case 1:
-                Log.d("EmotionApp","Load successfully");
+                //Log.d("EmotionApp","Load successfully");
                 //JSONArray jsonArray;
                 try {
-                    //jsonArray = jsonObj.getJSONArray("data");
                     resp = jsonObj.getString("message");
+                    int emotion_val = jsonObj.getInt("emotion_val");
+
+                    String[] emotions = activity.getResources().getStringArray(R.array.emotions);
+                    ImageView ivResp = (ImageView) activity.findViewById(R.id.ivResp);
+                    TextView tv = (TextView) activity.findViewById(R.id.tvResp);
+
+                    switch (emotion_val){
+                        case 0:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p0);
+                            break;
+                        case 1:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p1);
+                            break;
+                        case 2:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p2);
+                            break;
+                        case 3:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p3);
+                            break;
+                        case 4:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p4);
+                            break;
+                        case 5:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p5);
+                            break;
+                        case 6:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p6);
+                            break;
+                        case 7:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p7);
+                            break;
+                        case 8:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p8);
+                            break;
+                        case 9:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p9);
+                            break;
+                        case 10:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p10);
+                            break;
+                        case 11:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p11);
+                            break;
+                        case 12:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p12);
+                            break;
+                        case 13:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p13);
+                            break;
+                        case 14:
+                            tv.setText(emotions[emotion_val]);
+                            ivResp.setImageResource(R.drawable.p14);
+                            break;
+                        default:
+                            tv.setText(R.string.tv_empty);
+                            ivResp.setImageResource(R.mipmap.ic_launcher);
+                            break;
+                    }
                     Toast.makeText(activity.getApplicationContext(), resp, Toast.LENGTH_LONG).show();
-                        /*data = new String[jsonArray.length()][3];
+                    tts.speak(resp, TextToSpeech.QUEUE_FLUSH, null, "TW-zh");
 
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            data[i][0] = jsonObject.getString("friend_name");
-                            data[i][1] = jsonObject.getString("nickname");
-                            data[i][2] = jsonObject.getString("friend_img");
-
-                        }*/
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
